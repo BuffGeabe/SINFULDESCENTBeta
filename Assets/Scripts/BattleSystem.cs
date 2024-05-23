@@ -70,6 +70,7 @@ public class BattleSystem : MonoBehaviour
         {
             Debug.Log("Enemy defeated!");
             playerStats.GainXP(enemyStats.level * 50); // Award XP based on enemy level
+            playerStats.GainCurrency(enemyStats.level * 10); // Award currency based on enemy level
             EndBattle();
         }
         else

@@ -1,8 +1,10 @@
-using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public static PlayerMovement instance; // Singleton instance
+
     public float moveSpeed = 5f;
     public LayerMask obstacleLayer;
     public float encounterChance = 0.1f; // 10% chance of an encounter
@@ -15,15 +17,32 @@ public class PlayerMovement : MonoBehaviour
     public CharacterStats playerStats;
     public CharacterStats enemyPrefab; // Prefab for enemy character
 
+    public Text currencyText; // Reference to the currency text UI
+
     private Vector2 targetPosition;
     private bool isMoving;
     private Vector2 movementDirection;
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject); // Ensure this gameObject persists
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject); // Destroy duplicate player instances
+            return;
+        }
+    }
 
     void Start()
     {
         targetPosition = transform.position;
         battleCamera.gameObject.SetActive(false);
         battleUI.SetActive(false);
+        UpdateCurrencyUI(); // Initialize the currency UI
     }
 
     void Update()
@@ -94,5 +113,10 @@ public class PlayerMovement : MonoBehaviour
             enemyInstance.level = Random.Range(1, 5); // Example: Random level between 1 and 4
             battleSystem.TriggerBattle(playerStats, enemyInstance);
         }
+    }
+
+    public void UpdateCurrencyUI()
+    {
+        currencyText.text = $"Currency: {playerStats.currency}";
     }
 }
